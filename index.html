@@ -4,22 +4,53 @@
   <meta charset="UTF-8">
   <title>ShimulModZ URL Shortener</title>
   <style>
-    body { font-family: Arial, sans-serif; background:#f4f6f9; text-align: center; margin: 50px; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif; background:#f4f6f9; text-align: center; margin: 50px; 
+      
+    }
+   .container-bg{
+      padding: 10px 5px;
+      margin: 4px;
+      border: 2px solid black;
+      overflow: hidden;
+      display: gird;
+      justify-content: center;
+      align-items: center;
+    }
+   .input-box input{
+     width: 200px;
+     padding: 15px 20px;
+     margin: 10px;
+     background: #CEEAFF;
+     border-radius: 50px;
+     border: 2px dashed #3489EB;
+   }
+  .input-box button{
+    color: #000000;
+    background: linear-gradient(180deg, #FBA500, #FB00AE);
+    border-radius: 8px;
+     padding: 10px 40px;
+     cursor:pointer;
+     border: 3px solid #3E1CF6;
+   }
     h1 { color: #333; }
-    input, button { padding: 12px; margin: 10px; width: 300px; border-radius: 8px; border:1px solid #ddd; }
-    button { background:#007bff; color:white; cursor:pointer; border:none; }
-    button:hover { background:#0056b3; }
     .result { margin-top: 20px; font-weight: bold; font-size: 18px; }
     .copy-btn { background: #28a745; margin-left: 10px; }
   </style>
 </head>
 <body>
+  <div class="container-bg">
   <h1>🔗 ShimulModZ URL Shortener</h1>
+  <div class="input-box">
   <input type="text" id="longUrl" placeholder="Enter long URL"><br>
   <input type="text" id="customCode" placeholder="Custom code (optional)"><br>
   <button onclick="shorten()">Shorten</button>
   <div class="result" id="result"></div>
-
+  </div>
+  </div>
+  
   <script>
     // তোমার Cloudflare Worker URL বসাও এখানে 👇
     const WORKER_URL = "https://url-short-demo.shimul-modz.workers.dev";
