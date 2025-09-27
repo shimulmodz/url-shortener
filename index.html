@@ -4,9 +4,13 @@
   <meta charset="UTF-8">
   <title>ShimulModZ URL Shortener</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
-    input, button { padding: 10px; margin: 10px; width: 300px; }
-    .result { margin-top: 20px; font-weight: bold; }
+    body { font-family: Arial, sans-serif; background:#f4f6f9; text-align: center; margin: 50px; }
+    h1 { color: #333; }
+    input, button { padding: 12px; margin: 10px; width: 300px; border-radius: 8px; border:1px solid #ddd; }
+    button { background:#007bff; color:white; cursor:pointer; border:none; }
+    button:hover { background:#0056b3; }
+    .result { margin-top: 20px; font-weight: bold; font-size: 18px; }
+    .copy-btn { background: #28a745; margin-left: 10px; }
   </style>
 </head>
 <body>
@@ -20,8 +24,13 @@
     const WORKER_URL = "https://url-short-demo.shimul-modz.workers.dev";
 
     async function shorten() {
-      const longUrl = document.getElementById("longUrl").value;
-      const customCode = document.getElementById("customCode").value;
+      const longUrl = document.getElementById("longUrl").value.trim();
+      const customCode = document.getElementById("customCode").value.trim();
+
+      if (!longUrl) {
+        alert("❌ Please enter a valid URL");
+        return;
+      }
 
       const res = await fetch(WORKER_URL + "/shorten", {
         method: "POST",
@@ -30,8 +39,18 @@
       });
 
       const data = await res.json();
-      document.getElementById("result").innerHTML =
-        `✅ Short URL: <a href="${data.short}" target="_blank">${data.short}</a>`;
+      if (data.error) {
+        document.getElementById("result").innerText = data.error;
+      } else {
+        document.getElementById("result").innerHTML = 
+          `✅ Short URL: <a href="${data.short}" target="_blank">${data.short}</a>
+          <button class="copy-btn" onclick="copyLink('${data.short}')">📋 Copy</button>`;
+      }
+    }
+
+    function copyLink(link) {
+      navigator.clipboard.writeText(link);
+      alert("✅ Short link copied!");
     }
   </script>
 </body>
