@@ -21,6 +21,7 @@
   <div class="result" id="result"></div>
 
   <script>
+    // তোমার Cloudflare Worker URL বসাও এখানে 👇
     const WORKER_URL = "https://url-short-demo.shimul-modz.workers.dev";
 
     async function shorten() {
@@ -32,19 +33,23 @@
         return;
       }
 
-      const res = await fetch(WORKER_URL + "/shorten", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: longUrl, code: customCode })
-      });
+      try {
+        const res = await fetch(WORKER_URL + "/shorten", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: longUrl, code: customCode })
+        });
 
-      const data = await res.json();
-      if (data.error) {
-        document.getElementById("result").innerText = data.error;
-      } else {
-        document.getElementById("result").innerHTML = 
-          `✅ Short URL: <a href="${data.short}" target="_blank">${data.short}</a>
-          <button class="copy-btn" onclick="copyLink('${data.short}')">📋 Copy</button>`;
+        const data = await res.json();
+        if (data.error) {
+          document.getElementById("result").innerText = data.error;
+        } else {
+          document.getElementById("result").innerHTML =
+            `✅ Short URL: <a href="${data.short}" target="_blank">${data.short}</a>
+             <button class="copy-btn" onclick="copyLink('${data.short}')">📋 Copy</button>`;
+        }
+      } catch (err) {
+        document.getElementById("result").innerText = "❌ Failed to connect to server.";
       }
     }
 
