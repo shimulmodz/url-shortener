@@ -5,16 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ShimulModZ — Pro URL Shortener</title>
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg1: #f6f9ff; 
-      --card: #ffffff; 
-      --accent1: #5b6cff; 
-      --accent2: #7ce6b8; 
-      --muted: #6b7280;
-      --shadow: 0 4px 20px rgba(20, 20, 45, 0.08);
-      --radius: 16px;
+      --primary: #5b6cff;
+      --primary-light: #8b9aff;
+      --secondary: #7ce6b8;
+      --accent: #ff6b9d;
+      --gradient: linear-gradient(135deg, var(--primary), var(--accent));
+      --gradient-light: linear-gradient(135deg, var(--primary-light), #ff8db3);
+      --white: #ffffff;
+      --bg: #fefefe;
+      --card-bg: #ffffff;
+      --text: #2d3748;
+      --text-light: #718096;
+      --border: #e2e8f0;
+      --shadow: 0 10px 30px rgba(91, 108, 255, 0.1);
+      --shadow-hover: 0 15px 40px rgba(91, 108, 255, 0.15);
+      --radius: 20px;
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
     
     * {
@@ -24,222 +33,405 @@
     }
     
     body {
-      font-family: Inter, system-ui, Arial;
-      background: linear-gradient(180deg, var(--bg1), #eef6f9);
+      font-family: 'Inter', system-ui, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
       min-height: 100vh;
-      color: #333;
-      line-height: 1.5;
-      padding: 0;
-      margin: 0;
+      overflow-x: hidden;
     }
     
-    /* App Layout */
+    /* Animated Background */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+    
+    .bg-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(91, 108, 255, 0.03), rgba(124, 230, 184, 0.03));
+      animation: float 15s infinite ease-in-out;
+    }
+    
+    .bg-circle:nth-child(1) {
+      width: 300px;
+      height: 300px;
+      top: -100px;
+      left: -100px;
+      animation-delay: 0s;
+    }
+    
+    .bg-circle:nth-child(2) {
+      width: 200px;
+      height: 200px;
+      top: 50%;
+      right: -50px;
+      animation-delay: 5s;
+    }
+    
+    .bg-circle:nth-child(3) {
+      width: 150px;
+      height: 150px;
+      bottom: -50px;
+      left: 20%;
+      animation-delay: 10s;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+    
+    /* App Container */
     .app-container {
-      max-width: 100%;
+      max-width: 480px;
       margin: 0 auto;
-      padding: 16px;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
     }
     
+    /* Header */
     .app-header {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 16px;
-      box-shadow: var(--shadow);
       text-align: center;
+      margin-bottom: 30px;
+      padding: 20px 0;
+      position: relative;
+    }
+    
+    .logo {
+      width: 70px;
+      height: 70px;
+      background: var(--gradient);
+      border-radius: 50%;
+      margin: 0 auto 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+      animation: pulse 2s infinite;
+    }
+    
+    .logo svg {
+      width: 35px;
+      height: 35px;
+      color: white;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
     }
     
     .app-title {
-      font-size: 22px;
+      font-size: 28px;
       font-weight: 800;
-      margin-bottom: 4px;
-      color: var(--accent1);
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
     }
     
     .app-subtitle {
-      font-size: 14px;
-      color: var(--muted);
+      font-size: 16px;
+      color: var(--text-light);
+      font-weight: 500;
     }
     
     /* Cards */
     .card {
-      background: var(--card);
+      background: var(--card-bg);
       border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 16px;
+      padding: 25px;
+      margin-bottom: 20px;
       box-shadow: var(--shadow);
+      transition: var(--transition);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
     }
     
     .card-title {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 700;
-      margin-bottom: 12px;
+      margin-bottom: 20px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      color: var(--text);
     }
     
     .card-title svg {
-      width: 20px;
-      height: 20px;
+      width: 24px;
+      height: 24px;
+      color: var(--primary);
     }
     
     /* Form Elements */
     .form-group {
-      margin-bottom: 16px;
+      margin-bottom: 20px;
+      position: relative;
     }
     
     .form-label {
       display: block;
       font-size: 14px;
       font-weight: 600;
-      margin-bottom: 6px;
-      color: #444;
+      margin-bottom: 8px;
+      color: var(--text);
+      padding-left: 5px;
     }
     
     .form-input {
       width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(20, 20, 45, 0.1);
+      padding: 16px 20px;
+      border-radius: 14px;
+      border: 2px solid var(--border);
       font-size: 16px;
-      background: #fafafa;
-      transition: all 0.2s;
+      background: var(--white);
+      transition: var(--transition);
+      font-weight: 500;
     }
     
     .form-input:focus {
       outline: none;
-      border-color: var(--accent1);
-      background: white;
+      border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(91, 108, 255, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .form-hint {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-top: 6px;
+      padding-left: 5px;
     }
     
     /* Buttons */
     .btn-group {
       display: flex;
       gap: 12px;
-      margin-top: 20px;
+      margin-top: 25px;
     }
     
     .btn {
       flex: 1;
-      padding: 14px;
-      border-radius: 12px;
+      padding: 16px 20px;
+      border-radius: 14px;
       border: none;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: var(--transition);
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+    
+    .btn:hover::before {
+      left: 100%;
     }
     
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent1), #8b7dff);
+      background: var(--gradient);
       color: white;
-      box-shadow: 0 4px 12px rgba(91, 108, 255, 0.3);
+      box-shadow: 0 4px 15px rgba(91, 108, 255, 0.3);
     }
     
-    .btn-primary:active {
-      transform: translateY(2px);
-      box-shadow: 0 2px 6px rgba(91, 108, 255, 0.3);
+    .btn-primary:hover {
+      background: var(--gradient-light);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(91, 108, 255, 0.4);
     }
     
     .btn-secondary {
       background: transparent;
-      border: 1px solid rgba(20, 20, 45, 0.1);
-      color: var(--muted);
+      border: 2px solid var(--border);
+      color: var(--text-light);
+    }
+    
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-3px);
     }
     
     .btn-sm {
-      padding: 10px 14px;
+      padding: 12px 16px;
       font-size: 14px;
+      border-radius: 12px;
     }
     
     /* Result Section */
     .result-section {
       display: none;
-      margin-top: 20px;
-      padding: 16px;
-      border-radius: 12px;
-      background: #f8fafc;
-      border: 1px solid rgba(20, 20, 45, 0.05);
+      margin-top: 25px;
+      padding: 20px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #f8faff, #f0f7ff);
+      border: 1px solid rgba(91, 108, 255, 0.1);
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
     .result-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 8px;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     
     .short-link {
       font-weight: 700;
-      color: var(--accent1);
+      color: var(--primary);
       word-break: break-all;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       font-size: 18px;
+      padding: 12px;
+      background: rgba(91, 108, 255, 0.05);
+      border-radius: 10px;
+      border-left: 4px solid var(--primary);
     }
     
     .meta-info {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 16px;
+      font-size: 14px;
+      color: var(--text-light);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .meta-info::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--secondary);
+      border-radius: 50%;
     }
     
     .action-buttons {
       display: flex;
       gap: 10px;
-      margin-top: 16px;
+      margin-top: 20px;
       flex-wrap: wrap;
     }
     
     /* QR Code */
     .qr-container {
       text-align: center;
-      margin-top: 16px;
-      padding: 16px;
+      margin-top: 20px;
+      padding: 20px;
       background: white;
-      border-radius: 12px;
+      border-radius: 16px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+      animation: slideUp 0.5s ease-out;
+    }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
     #qcanvas {
-      max-width: 100%;
-      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     }
     
     /* History */
     .history-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-top: 16px;
+      gap: 15px;
+      margin-top: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+    
+    .history-list::-webkit-scrollbar {
+      width: 5px;
+    }
+    
+    .history-list::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    .history-list::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
     }
     
     .history-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 14px;
-      border-radius: 12px;
-      background: #f8fafc;
-      border: 1px dashed rgba(20, 20, 45, 0.08);
+      padding: 16px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #f8faff, #f0f7ff);
+      border: 1px solid rgba(91, 108, 255, 0.1);
+      transition: var(--transition);
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    .history-item:hover {
+      transform: translateX(5px);
+      border-color: var(--primary-light);
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
     }
     
     .history-info {
       flex: 1;
+      overflow: hidden;
     }
     
     .history-short {
       font-weight: 600;
-      color: var(--accent1);
+      color: var(--primary);
       margin-bottom: 4px;
+      font-size: 16px;
     }
     
     .history-long {
       font-size: 13px;
-      color: var(--muted);
+      color: var(--text-light);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -253,29 +445,45 @@
     /* Tabs */
     .tabs {
       display: flex;
-      background: #f0f4f8;
+      background: rgba(91, 108, 255, 0.05);
+      border-radius: 16px;
+      padding: 6px;
+      margin-bottom: 25px;
+      position: relative;
+    }
+    
+    .tab-indicator {
+      position: absolute;
+      height: calc(100% - 12px);
+      width: calc(33.333% - 12px);
+      background: var(--gradient);
       border-radius: 12px;
-      padding: 4px;
-      margin-bottom: 20px;
+      top: 6px;
+      left: 6px;
+      transition: var(--transition);
+      z-index: 0;
     }
     
     .tab {
       flex: 1;
       text-align: center;
       padding: 12px;
-      border-radius: 10px;
+      border-radius: 12px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: var(--transition);
+      z-index: 1;
+      position: relative;
+      color: var(--text-light);
     }
     
     .tab.active {
-      background: white;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      color: white;
     }
     
     .tab-content {
       display: none;
+      animation: fadeIn 0.4s ease-out;
     }
     
     .tab-content.active {
@@ -300,17 +508,22 @@
     /* Toast Notification */
     .toast {
       position: fixed;
-      bottom: 20px;
+      bottom: 30px;
       left: 50%;
       transform: translateX(-50%) translateY(100px);
-      background: rgba(0, 0, 0, 0.8);
+      background: var(--gradient);
       color: white;
-      padding: 12px 20px;
+      padding: 14px 24px;
       border-radius: 50px;
       font-size: 14px;
+      font-weight: 500;
       z-index: 1000;
       opacity: 0;
-      transition: all 0.3s;
+      transition: var(--transition);
+      box-shadow: 0 10px 25px rgba(91, 108, 255, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     
     .toast.show {
@@ -318,57 +531,81 @@
       transform: translateX(-50%) translateY(0);
     }
     
-    /* Responsive Adjustments */
-    @media (min-width: 768px) {
+    .toast svg {
+      width: 18px;
+      height: 18px;
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-light);
+    }
+    
+    .empty-state svg {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+    
+    /* Responsive */
+    @media (max-width: 480px) {
       .app-container {
-        max-width: 500px;
+        padding: 15px;
+      }
+      
+      .card {
         padding: 20px;
+      }
+      
+      .btn-group {
+        flex-direction: column;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
       }
     }
     
-    /* Dark Mode Support */
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg1: #121826;
-        --card: #1e293b;
-        --muted: #94a3b8;
-      }
-      
-      body {
-        color: #e2e8f0;
-      }
-      
-      .form-input {
-        background: #2d3748;
-        border-color: #4a5568;
-        color: #e2e8f0;
-      }
-      
-      .form-input:focus {
-        background: #2d3748;
-      }
-      
-      .result-section, .history-item {
-        background: #2d3748;
-      }
-      
-      .tabs {
-        background: #2d3748;
-      }
+    /* Animation for success */
+    @keyframes success {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    .success {
+      animation: success 0.5s ease;
     }
   </style>
 </head>
 <body>
+  <!-- Animated Background -->
+  <div class="bg-animation">
+    <div class="bg-circle"></div>
+    <div class="bg-circle"></div>
+    <div class="bg-circle"></div>
+  </div>
+  
   <div class="app-container">
     <!-- App Header -->
     <div class="app-header">
-      <h1 class="app-title">🔗 ShimulModZ</h1>
-      <p class="app-subtitle">প্রোফেশনাল URL শর্টেনার</p>
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+        </svg>
+      </div>
+      <h1 class="app-title">ShimulModZ URL Shortener</h1>
+      <p class="app-subtitle">পেশাদার লিংক শর্টেনার সার্ভিস</p>
     </div>
     
     <!-- Tabs Navigation -->
     <div class="tabs">
-      <div class="tab active" data-tab="shorten">শর্টেন</div>
+      <div class="tab-indicator" id="tabIndicator"></div>
+      <div class="tab active" data-tab="shorten">লিংক শর্টেন</div>
       <div class="tab" data-tab="history">ইতিহাস</div>
       <div class="tab" data-tab="tools">টুলস</div>
     </div>
@@ -391,9 +628,7 @@
         <div class="form-group">
           <label class="form-label" for="code">কাস্টম কোড (ঐচ্ছিক)</label>
           <input id="code" type="text" class="form-input" placeholder="my-custom-code" />
-          <div style="font-size: 12px; color: var(--muted); margin-top: 6px;">
-            শুধুমাত্র অক্ষর, সংখ্যা, - এবং _ ব্যবহার করুন
-          </div>
+          <div class="form-hint">শুধুমাত্র অক্ষর, সংখ্যা, - এবং _ ব্যবহার করুন</div>
         </div>
         
         <div class="btn-group">
@@ -406,27 +641,33 @@
         
         <!-- Result Section -->
         <div id="feedback" class="result-section">
-          <div class="result-title">শর্ট লিংক তৈরি হয়েছে!</div>
+          <div class="result-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            শর্ট লিংক তৈরি হয়েছে!
+          </div>
           <div id="shortLink" class="short-link"></div>
           <div id="metaInfo" class="meta-info"></div>
           
           <div class="action-buttons">
-            <button class="btn btn-secondary btn-sm" id="copyBtn">
+            <button class="btn btn-primary btn-sm" id="copyBtn">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
               </svg>
-              কপি
+              কপি করুন
             </button>
-            <button class="btn btn-secondary btn-sm" id="openBtn">
+            <button class="btn btn-primary btn-sm" id="openBtn">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                 <polyline points="15 3 21 3 21 9"></polyline>
                 <line x1="10" y1="14" x2="21" y2="3"></line>
               </svg>
-              ওপেন
+              ওপেন করুন
             </button>
-            <button class="btn btn-secondary btn-sm" id="downloadQrBtn">
+            <button class="btn btn-primary btn-sm" id="downloadQrBtn">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="7 10 12 15 17 10"></polyline>
@@ -455,7 +696,7 @@
         </h2>
         
         <div class="btn-group">
-          <button class="btn btn-secondary" id="showHistory">রিফ্রেশ</button>
+          <button class="btn btn-secondary" id="showHistory">রিফ্রেশ করুন</button>
           <button class="btn btn-secondary" id="clearHistory">ইতিহাস ক্লিয়ার</button>
         </div>
         
@@ -472,26 +713,30 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
           </svg>
-          টুলস
+          উন্নত টুলস
         </h2>
         
         <div class="form-group">
           <label class="form-label" for="inspectCode">শর্ট কোড ইনস্পেক্ট করুন</label>
           <input id="inspectCode" type="text" class="form-input" placeholder="ab12x" />
-          <div style="font-size: 12px; color: var(--muted); margin-top: 6px;">
-            লিংকের ক্লিক সংখ্যা দেখুন
-          </div>
+          <div class="form-hint">লিংকের ক্লিক সংখ্যা এবং তথ্য দেখুন</div>
         </div>
         
         <button class="btn btn-primary" id="inspectBtn">ইনস্পেক্ট করুন</button>
         
-        <div id="inspectResult" style="margin-top: 16px; padding: 12px; border-radius: 8px; background: #f0f4f8; font-size: 14px; display: none;"></div>
+        <div id="inspectResult" style="margin-top: 20px; padding: 16px; border-radius: 12px; background: linear-gradient(135deg, #f8faff, #f0f7ff); font-size: 14px; display: none; border-left: 4px solid var(--secondary);"></div>
       </div>
     </div>
   </div>
   
   <!-- Toast Notification -->
-  <div class="toast" id="toast"></div>
+  <div class="toast" id="toast">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
+    <span id="toast-text"></span>
+  </div>
   
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script>
@@ -523,16 +768,21 @@
     
     const tabs = document.querySelectorAll('.tab');
     const tabContents = document.querySelectorAll('.tab-content');
+    const tabIndicator = document.getElementById('tabIndicator');
     const toastEl = document.getElementById('toast');
+    const toastText = document.getElementById('toast-text');
 
     // ====== Tab Functionality ======
-    tabs.forEach(tab => {
+    tabs.forEach((tab, index) => {
       tab.addEventListener('click', () => {
         const tabId = tab.getAttribute('data-tab');
         
         // Update active tab
         tabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
+        
+        // Move tab indicator
+        tabIndicator.style.transform = `translateX(${index * 100}%)`;
         
         // Show active tab content
         tabContents.forEach(content => {
@@ -551,7 +801,7 @@
 
     // ====== Toast Function ======
     function toast(message, duration = 3000) {
-      toastEl.textContent = message;
+      toastText.textContent = message;
       toastEl.classList.add('show');
       
       setTimeout(() => {
@@ -582,7 +832,16 @@
       historyEl.innerHTML = '';
       
       if (!arr.length) { 
-        historyEl.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--muted);">কোনো ইতিহাস নেই</div>'; 
+        historyEl.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <div>কোনো ইতিহাস নেই</div>
+            <div style="font-size: 14px; margin-top: 5px;">লিংক শর্টেন করুন এবং এখানে দেখুন</div>
+          </div>
+        `; 
         return; 
       }
       
@@ -595,13 +854,13 @@
             <div class="history-long">${item.long}</div>
           </div>
           <div class="history-actions">
-            <button class="btn btn-secondary btn-sm" data-copy="${item.short}">
+            <button class="btn btn-primary btn-sm" data-copy="${item.short}">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
               </svg>
             </button>
-            <button class="btn btn-secondary btn-sm" data-open="${item.short}">
+            <button class="btn btn-primary btn-sm" data-open="${item.short}">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                 <polyline points="15 3 21 3 21 9"></polyline>
@@ -618,7 +877,13 @@
     document.addEventListener('click', (e) => {
       if (e.target && e.target.closest('[data-copy]')) {
         const copyText = e.target.closest('[data-copy]').getAttribute('data-copy');
-        navigator.clipboard.writeText(copyText).then(() => toast('কপি করা হয়েছে!'));
+        navigator.clipboard.writeText(copyText).then(() => {
+          toast('লিংক কপি করা হয়েছে!');
+          e.target.closest('.btn').classList.add('success');
+          setTimeout(() => {
+            e.target.closest('.btn').classList.remove('success');
+          }, 500);
+        });
       }
       
       if (e.target && e.target.closest('[data-open]')) {
@@ -665,7 +930,7 @@
         
         saveHistory(item);
 
-        // Show result
+        // Show result with animation
         feedback.style.display = 'block';
         shortLinkEl.textContent = data.short; 
         metaInfo.textContent = `কোড: ${data.code} • তৈরি হয়েছে: ${new Date().toLocaleString('bn-BD')}`;
@@ -702,6 +967,10 @@
       if (txt) { 
         navigator.clipboard.writeText(txt); 
         toast('শর্ট লিংক কপি করা হয়েছে!');
+        copyBtn.classList.add('success');
+        setTimeout(() => {
+          copyBtn.classList.remove('success');
+        }, 500);
       } 
     });
     
@@ -745,7 +1014,7 @@
         const r = await fetch(WORKER_URL + '/info/' + encodeURIComponent(c));
         
         if (r.status === 404) { 
-          inspectResult.textContent = 'কোডটি পাওয়া যায়নি'; 
+          inspectResult.innerHTML = '<strong>কোডটি পাওয়া যায়নি</strong>'; 
           inspectResult.style.display = 'block';
           return; 
         }
