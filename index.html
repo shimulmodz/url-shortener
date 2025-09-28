@@ -1,344 +1,217 @@
-<!-- index.html -->
 <!doctype html>
 <html lang="bn">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ShimulModZ - URL Shortener (Premium)</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ShimulModZ — Pro URL Shortener</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg: linear-gradient(135deg,#eef4ff,#e6f0ff);
-      --card:#ffffff;
-      --muted:#556;
-      --accent-start:#667eea;
-      --accent-end:#764ba2;
+      --bg1: #f6f9ff; --card: #ffffff; --accent1: #5b6cff; --accent2: #7ce6b8; --muted:#6b7280;
     }
-    body.dark{ --card:#0f1720; --muted:#cfd8ff; --bg:#071028; color:#e6eefc; }
-    body{ margin:0; font-family:Inter,Segoe UI,Arial; background:var(--bg); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
-    .wrap{ width:100%; max-width:920px; display:grid; grid-template-columns: 1fr 380px; gap:20px; align-items:start; }
-    .card{ background:var(--card); border-radius:14px; padding:20px; box-shadow:0 8px 30px rgba(20,20,50,0.08); }
-    h1{ margin:0 0 8px; font-size:20px; }
-    .desc{ color:var(--muted); margin-bottom:12px; font-size:13px; }
-    .form-row{ display:flex; gap:10px; align-items:center; margin-bottom:10px; }
-    .full{ width:100%; }
-    input[type="text"], input[type="number"], select{
-      width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(52,137,235,0.2); font-size:14px;
-      background:transparent;
-    }
-    .small{ width:80px; }
-    .btn-primary{
-      width:100%; padding:12px; border-radius:10px; border:none; color:white; font-weight:600;
-      background:linear-gradient(90deg,var(--accent-start),var(--accent-end)); cursor:pointer;
-    }
-    .controls{ display:flex; gap:8px; margin-top:8px; }
-    .btn-ghost{ padding:8px 10px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); background:transparent; cursor:pointer; }
-    .result{ margin-top:16px; padding:12px; border-radius:10px; background:linear-gradient(180deg,#f7f9ff,#eef3ff); font-size:14px; }
-    .dark .result{ background:rgba(255,255,255,0.02); }
-    .short-link{ color:#0b66ff; font-weight:700; word-break:break-all; }
-    .copy-btn, .qr-btn{ padding:6px 10px; border-radius:8px; border:none; cursor:pointer; font-size:14px; }
-    .copy-btn{ background:#2dd36f; color:#04210b; }
-    .qr-btn{ background:#ff7043; color:white; }
-    .history{ margin-top:12px; max-height:240px; overflow:auto; font-size:13px; }
-    .history-item{ padding:8px; border-bottom:1px dashed rgba(0,0,0,0.03); display:flex; justify-content:space-between; gap:8px; align-items:center; }
-    .meta{ color:var(--muted); font-size:12px; }
-    .right-panel{ display:flex; flex-direction:column; gap:12px; }
-    .panel-title{ font-size:14px; margin-bottom:6px; }
-    .small-muted{ font-size:12px; color:var(--muted); }
-    .spinner{ width:28px; height:28px; border-radius:50%; border:4px solid #e6eefc; border-top-color: #5676f2; animation:spin 1s linear infinite; display:inline-block; }
-    @keyframes spin{ to{ transform:rotate(360deg); } }
-    @media (max-width:900px){
-      .wrap{ grid-template-columns: 1fr; }
-    }
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Arial;margin:0;background:linear-gradient(180deg,var(--bg1),#eef6f9);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .wrap{width:100%;max-width:920px}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:24px}
+    .card{background:var(--card);border-radius:14px;padding:20px;box-shadow:0 8px 30px rgba(20,20,45,0.06)}
+    h1{margin:0;font-size:20px}
+
+    /* Form */
+    .form .row{display:flex;gap:12px;margin-top:12px}
+    .form input[type=text], .form input[type=url], .form button{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(20,20,45,0.06);font-size:14px}
+    .form .small{font-size:12px;color:var(--muted);margin-top:8px}
+    .actions{display:flex;gap:10px;margin-top:12px}
+    .btn{background:linear-gradient(90deg,var(--accent1),#9b8bff);color:#fff;border:none;padding:10px 14px;border-radius:10px;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(20,20,45,0.06);color:var(--muted)}
+
+    /* Result */
+    .result{margin-top:14px;padding:12px;border-radius:10px;background:#f8fafc;border:1px solid rgba(20,20,45,0.03)}
+    .short{font-weight:600;color:var(--accent1);word-break:break-all}
+    .mini{font-size:13px;color:var(--muted)}
+
+    /* History */
+    .history-list{display:flex;flex-direction:column;gap:8px}
+    .history-item{display:flex;justify-content:space-between;gap:8px;padding:10px;border-radius:10px;border:1px dashed rgba(20,20,45,0.03)}
+
+    /* QR canvas area */
+    #qcanvas{display:block;margin-top:10px}
+
+    /* Responsive */
+    @media (max-width:920px){.grid{grid-template-columns:1fr;}.card{margin-bottom:12px}}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="card">
-      <h1>🔗 ShimulModZ URL Shortener — Premium</h1>
-      <div class="desc">Custom code, precise expiry (days/hours/minutes/seconds), QR, history, dark-mode & more — bug-minimized and production-ready.</div>
+    <div class="grid">
+      <div class="card form">
+        <h1>🔗 ShimulModZ — Pro URL Shortener</h1>
+        <p class="small">সরাসরি লিংক দাও, কাস্টম কোড দাও (ঐচ্ছিক), QR বানাও ও ডাউনলোড করো।</p>
 
-      <div>
-        <label class="small-muted">Long URL</label>
-        <input id="longUrl" type="text" placeholder="https://example.com/some/long/path" />
+        <div class="row" style="margin-top:14px">
+          <input id="url" type="url" placeholder="Enter full URL (https://...)" />
+        </div>
+        <div class="row">
+          <input id="code" type="text" placeholder="Custom code (optional) - অক্ষর/সংখ্যা/ -_ allowed" />
+        </div>
 
-        <div class="form-row">
-          <div style="flex:1">
-            <label class="small-muted">Custom Code (optional)</label>
-            <input id="customCode" type="text" placeholder="my-code (letters,numbers,-,_)" />
+        <div class="actions">
+          <button class="btn" id="shortBtn">Shorten</button>
+          <button class="btn ghost" id="clearBtn">Clear</button>
+        </div>
+
+        <div id="feedback" class="result" style="display:none">
+          <div>Result: <span id="shortLink" class="short"></span></div>
+          <div class="mini" id="metaInfo"></div>
+          <div style="margin-top:8px">
+            <button class="btn ghost" id="copyBtn">Copy</button>
+            <button class="btn ghost" id="openBtn">Open</button>
+            <button class="btn ghost" id="downloadQrBtn">Download QR</button>
           </div>
-          <div style="width:120px">
-            <label class="small-muted">Overwrite</label>
-            <select id="overwrite" style="padding:10px;border-radius:8px">
-              <option value="false">No</option>
-              <option value="true">Yes</option>
-            </select>
-          </div>
+          <canvas id="qcanvas"></canvas>
         </div>
 
-        <div style="margin-top:8px">
-          <label class="small-muted">Expiry (set any fields to create an expiry)</label>
-          <div class="form-row">
-            <input id="expDays" class="small" type="number" min="0" placeholder="days" />
-            <input id="expHours" class="small" type="number" min="0" placeholder="hours" />
-            <input id="expMinutes" class="small" type="number" min="0" placeholder="minutes" />
-            <input id="expSeconds" class="small" type="number" min="0" placeholder="seconds" />
-          </div>
-          <div class="small-muted">Or leave all empty for no expiry.</div>
-        </div>
-
-        <div style="margin-top:12px">
-          <button id="btnShorten" class="btn-primary">Shorten Link</button>
-          <div style="margin-top:10px" id="feedback"></div>
-        </div>
-
-        <div id="resultBox" class="result" style="display:none;">
-          <div>✅ Short URL: <span id="shortLink" class="short-link"></span></div>
-          <div style="margin-top:8px" id="linkActions">
-            <button class="copy-btn" onclick="copyShort()">📋 Copy</button>
-            <button class="qr-btn" onclick="toggleQR()">📱 QR</button>
-            <button class="btn-ghost" onclick="openInfo()">ℹ️ Info</button>
-          </div>
-          <div id="qrContainer" style="margin-top:10px"></div>
-          <div id="expiryInfo" style="margin-top:10px" class="meta"></div>
-          <div id="clickInfo" style="margin-top:6px" class="meta"></div>
-        </div>
-
-        <div class="history" id="historyBox"></div>
-      </div>
-    </div>
-
-    <div class="right-panel">
-      <div class="card">
-        <div class="panel-title">Settings & Utilities</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <button class="btn-ghost" id="toggleThemeBtn">🌙 Theme</button>
-          <button class="btn-ghost" id="clearHistoryBtn">🧹 Clear History</button>
-        </div>
-        <hr style="margin:12px 0" />
-        <div class="panel-title">Quick Tips</div>
-        <div class="small-muted">
-          • Custom code: only letters, numbers, - and _. <br/>
-          • Use overwrite=true to replace an existing code. <br/>
-          • Expiry is precise to the second. <br/>
-          • For extremely accurate high-volume click counters use Durable Objects.
-        </div>
       </div>
 
       <div class="card">
-        <div class="panel-title">Your Recent Links</div>
-        <div id="miniHistory" class="history"></div>
+        <h2 style="margin:0;font-size:16px">History & Tools</h2>
+        <p class="small">এই ব্রাউজারে সর্বশেষ 10 টি লিংক সংরক্ষিত থাকবে।</p>
+
+        <div style="margin-top:10px">
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <button class="btn ghost" id="showHistory">Show History</button>
+            <button class="btn ghost" id="clearHistory">Clear History</button>
+          </div>
+
+          <div id="history" class="history-list"></div>
+        </div>
+
+        <hr style="margin:12px 0">
+        <div>
+          <h3 style="margin:0;font-size:14px">Quick tools</h3>
+          <p class="mini">Enter a short code to see clicks (from KV) — যদি Worker এ info endpoint চলে।</p>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <input id="inspectCode" type="text" placeholder="short code (e.g. ab12x)" />
+            <button class="btn ghost" id="inspectBtn">Inspect</button>
+          </div>
+          <div id="inspectResult" class="mini" style="margin-top:8px"></div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- QR library -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-
   <script>
-    // CONFIG: set your worker base URL (no trailing slash)
-    const WORKER_URL = "https://url-short-demo.shimul-modz.workers.dev";
+    // ====== CONFIG ======
+    const WORKER_URL = 'https://url-short-demo.shimul-modz.workers.dev'; // <-- change to your worker URL
 
-    // Elements
-    const longUrlEl = document.getElementById('longUrl');
-    const customCodeEl = document.getElementById('customCode');
-    const btnShorten = document.getElementById('btnShorten');
-    const feedbackEl = document.getElementById('feedback');
-    const resultBox = document.getElementById('resultBox');
+    // ====== UI refs ======
+    const urlInput = document.getElementById('url');
+    const codeInput = document.getElementById('code');
+    const shortBtn = document.getElementById('shortBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const feedback = document.getElementById('feedback');
     const shortLinkEl = document.getElementById('shortLink');
-    const qrContainer = document.getElementById('qrContainer');
-    const expiryInfo = document.getElementById('expiryInfo');
-    const clickInfo = document.getElementById('clickInfo');
-    const historyBox = document.getElementById('historyBox');
-    const miniHistory = document.getElementById('miniHistory');
+    const metaInfo = document.getElementById('metaInfo');
+    const copyBtn = document.getElementById('copyBtn');
+    const openBtn = document.getElementById('openBtn');
+    const downloadQrBtn = document.getElementById('downloadQrBtn');
+    const qcanvas = document.getElementById('qcanvas');
 
-    btnShorten.addEventListener('click', shortenHandler);
-    document.getElementById('toggleThemeBtn').addEventListener('click', toggleTheme);
-    document.getElementById('clearHistoryBtn').addEventListener('click', () => {
-      localStorage.removeItem('short_history_v1');
-      renderHistory();
-    });
+    const historyEl = document.getElementById('history');
+    const showHistoryBtn = document.getElementById('showHistory');
+    const clearHistoryBtn = document.getElementById('clearHistory');
 
-    function showFeedback(html, type='info'){
-      feedbackEl.innerHTML = html;
-      setTimeout(()=> { feedbackEl.innerHTML = ''; }, 6000);
-    }
+    const inspectCode = document.getElementById('inspectCode');
+    const inspectBtn = document.getElementById('inspectBtn');
+    const inspectResult = document.getElementById('inspectResult');
 
-    function getExpiryPayload(){
-      const d = Number(document.getElementById('expDays').value) || 0;
-      const h = Number(document.getElementById('expHours').value) || 0;
-      const m = Number(document.getElementById('expMinutes').value) || 0;
-      const s = Number(document.getElementById('expSeconds').value) || 0;
-      if (d===0 && h===0 && m===0 && s===0) return null;
-      return { days: d, hours: h, minutes: m, seconds: s };
-    }
+    // ====== Helpers ======
+    function toast(txt){alert(txt)}
 
-    async function shortenHandler(){
-      const longUrl = longUrlEl.value.trim();
-      if (!longUrl) return showFeedback('❌ Please enter a URL.');
-      if (!/^https?:\/\//i.test(longUrl)) return showFeedback('❌ URL must start with http:// or https://');
-
-      const code = customCodeEl.value.trim();
-      const overwrite = document.getElementById('overwrite').value === 'true';
-      const expire = getExpiryPayload();
-
-      btnShorten.disabled = true;
-      btnShorten.textContent = 'Creating...';
-      showFeedback('<span class="spinner"></span>');
-
-      try {
-        const res = await fetch(WORKER_URL + '/shorten', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            url: longUrl,
-            code: code || undefined,
-            overwrite: overwrite,
-            expire: expire ? expire : undefined
-          })
-        });
-
-        const data = await res.json();
-        btnShorten.disabled = false;
-        btnShorten.textContent = 'Shorten Link';
-        feedbackEl.innerHTML = '';
-
-        if (!res.ok) {
-          showFeedback('❌ ' + (data.error || 'Failed to shorten'));
-          return;
-        }
-
-        // success
-        shortLinkEl.textContent = data.short;
-        shortLinkEl.href = data.short;
-        resultBox.style.display = 'block';
-        qrContainer.innerHTML = '';
-        expiryInfo.textContent = data.expire ? 'Expire at: ' + new Date(data.expire).toLocaleString() : 'No expiry';
-        clickInfo.textContent = 'Clicks: 0 (updating on redirect)';
-
-        // save history locally
-        saveLocalHistory({
-          short: data.short,
-          code: data.code,
-          long: data.long,
-          created: Date.now(),
-          expire: data.expire || null,
-          clicks: 0
-        });
-
-        renderHistory();
-        renderMiniHistory();
-
-      } catch (err) {
-        btnShorten.disabled = false;
-        btnShorten.textContent = 'Shorten Link';
-        showFeedback('❌ Failed to connect to server.');
-      }
-    }
-
-    function copyShort(){
-      const text = shortLinkEl.textContent;
-      navigator.clipboard.writeText(text).then(()=>{
-        showFeedback('✅ Copied to clipboard');
-      });
-    }
-
-    let qrVisible = false;
-    function toggleQR(){
-      if (!shortLinkEl.textContent) return;
-      qrVisible = !qrVisible;
-      if (qrVisible) {
-        qrContainer.innerHTML = '';
-        QRCode.toCanvas(shortLinkEl.textContent, { width: 220 }, function (err, canvas) {
-          if (err) { qrContainer.textContent = 'QR error'; return; }
-          qrContainer.appendChild(canvas);
-        });
-      } else {
-        qrContainer.innerHTML = '';
-      }
-    }
-
-    // info button -> fetch /info/:code
-    async function openInfo(){
-      const short = shortLinkEl.textContent;
-      if (!short) return;
-      const code = short.split('/').pop();
-      try {
-        const res = await fetch(WORKER_URL + '/info/' + encodeURIComponent(code));
-        const data = await res.json();
-        if (!res.ok) {
-          showFeedback('❌ ' + (data.error || 'Info fetch failed'));
-          return;
-        }
-        const meta = data.meta;
-        let infoHtml = `Original: ${meta.url}\nCreated: ${new Date(meta.created).toLocaleString()}\nClicks: ${meta.clicks}\n`;
-        if (meta.expire) infoHtml += `Expire: ${new Date(meta.expire).toLocaleString()}\nExpired: ${data.expired ? 'Yes' : 'No'}`;
-        alert(infoHtml);
-      } catch (e) {
-        showFeedback('❌ Failed to fetch info');
-      }
-    }
-
-    // Local history (store up to 20)
-    function saveLocalHistory(obj){
-      const arr = JSON.parse(localStorage.getItem('short_history_v1') || '[]');
-      arr.unshift(obj);
-      // unique by code
-      const seen = new Set();
-      const filtered = [];
-      for (const it of arr) {
-        if (!seen.has(it.code)) { filtered.push(it); seen.add(it.code); }
-        if (filtered.length >= 20) break;
-      }
-      localStorage.setItem('short_history_v1', JSON.stringify(filtered));
+    function saveHistory(item){
+      try{
+        const arr = JSON.parse(localStorage.getItem('shimul_history')||'[]');
+        arr.unshift(item);
+        const uniq = [];
+        const out = [];
+        for(const it of arr){ if(uniq.indexOf(it.code)===-1){ uniq.push(it.code); out.push(it); } }
+        while(out.length>10) out.pop();
+        localStorage.setItem('shimul_history', JSON.stringify(out));
+      }catch(e){console.warn(e)}
     }
 
     function renderHistory(){
-      const arr = JSON.parse(localStorage.getItem('short_history_v1') || '[]');
-      if (arr.length === 0) {
-        historyBox.innerHTML = '<div class="small-muted">No history yet — your recent short links will appear here.</div>';
-        return;
-      }
-      historyBox.innerHTML = arr.map(it => {
-        const exp = it.expire ? new Date(it.expire).toLocaleString() : 'Never';
-        return `<div class="history-item">
-          <div style="flex:1">
-            <div style="font-weight:600"><a href="${it.short}" target="_blank">${it.short}</a></div>
-            <div class="meta">${it.long}</div>
-            <div class="meta">Expire: ${exp}</div>
-          </div>
-          <div style="min-width:90px;text-align:right">
-            <div class="meta">Clicks: ${it.clicks || 0}</div>
-            <div style="margin-top:6px"><button class="btn-ghost" onclick="deleteHistory('${it.code}')">Delete</button></div>
-          </div>
-        </div>`;
-      }).join('');
+      const arr = JSON.parse(localStorage.getItem('shimul_history')||'[]');
+      historyEl.innerHTML='';
+      if(!arr.length){ historyEl.innerHTML='<div class="mini">No history yet</div>'; return; }
+      arr.forEach(item=>{
+        const el = document.createElement('div'); el.className='history-item';
+        el.innerHTML = `<div style="flex:1"><div style="font-weight:600">${item.short}</div><div class="mini">${item.long}</div></div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                          <button class="btn ghost" data-copy="${item.short}">Copy</button>
+                          <button class="btn ghost" data-open="${item.short}">Open</button>
+                        </div>`;
+        historyEl.appendChild(el);
+      });
     }
 
-    function renderMiniHistory(){
-      const arr = JSON.parse(localStorage.getItem('short_history_v1') || '[]');
-      if (arr.length === 0) { miniHistory.innerHTML = '<div class="small-muted">No links</div>'; return; }
-      miniHistory.innerHTML = arr.slice(0,6).map(it => `<div class="history-item"><div style="flex:1"><a href="${it.short}" target="_blank">${it.short}</a><div class="meta">${it.long}</div></div><div class="meta">${it.clicks||0}</div></div>`).join('');
-    }
+    document.addEventListener('click', (e)=>{
+      if(e.target && e.target.dataset && e.target.dataset.copy){ navigator.clipboard.writeText(e.target.dataset.copy).then(()=>toast('Copied')) }
+      if(e.target && e.target.dataset && e.target.dataset.open){ window.open(e.target.dataset.open, '_blank') }
+    });
 
-    function deleteHistory(code){
-      let arr = JSON.parse(localStorage.getItem('short_history_v1') || '[]');
-      arr = arr.filter(it => it.code !== code);
-      localStorage.setItem('short_history_v1', JSON.stringify(arr));
-      renderHistory(); renderMiniHistory();
-    }
+    // ====== Shorten flow ======
+    shortBtn.addEventListener('click', async ()=>{
+      const longUrl = urlInput.value.trim();
+      let code = codeInput.value.trim();
+      if(!longUrl || !/^https?:\/\//i.test(longUrl)){ toast('Please enter a valid URL (start with http/https)'); return; }
 
-    // theme
-    function toggleTheme(){
-      document.body.classList.toggle('dark');
-    }
+      shortBtn.disabled = true; shortBtn.textContent='Working...';
+      try{
+        const resp = await fetch(WORKER_URL + '/shorten', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ url: longUrl, code }) });
+        const data = await resp.json();
+        if(data.error){ toast(data.error); return; }
+
+        const item = { short: data.short, long: longUrl, code: data.code, created: Date.now() };
+        saveHistory(item); renderHistory();
+
+        feedback.style.display = 'block';
+        shortLinkEl.textContent = data.short; metaInfo.textContent = `Code: ${data.code} • Created: ${new Date().toLocaleString()}`;
+
+        // generate qr to canvas
+        qcanvas.width = 240; qcanvas.height = 240;
+        QRCode.toCanvas(qcanvas, data.short, { width: 240 }, function (err) { if(err) console.error(err); });
+
+      }catch(err){ console.error(err); toast('Failed to connect to server.'); }
+      finally{ shortBtn.disabled=false; shortBtn.textContent='Shorten' }
+    });
+
+    clearBtn.addEventListener('click', ()=>{ urlInput.value=''; codeInput.value=''; feedback.style.display='none' });
+
+    copyBtn.addEventListener('click', ()=>{ const txt = shortLinkEl.textContent; if(txt){ navigator.clipboard.writeText(txt); toast('Short link copied') } });
+    openBtn.addEventListener('click', ()=>{ const txt = shortLinkEl.textContent; if(txt) window.open(txt, '_blank') });
+
+    downloadQrBtn.addEventListener('click', ()=>{
+      if(!qcanvas) return; const url = qcanvas.toDataURL('image/png'); const a = document.createElement('a'); a.href = url; a.download = 'shortlink-qr.png'; a.click();
+    });
+
+    // ====== History UI ======
+    showHistoryBtn.addEventListener('click', ()=>{ renderHistory() });
+    clearHistoryBtn.addEventListener('click', ()=>{ localStorage.removeItem('shimul_history'); renderHistory(); toast('History cleared') });
+
+    // ====== Inspect code ======
+    inspectBtn.addEventListener('click', async ()=>{
+      const c = inspectCode.value.trim(); if(!c){ inspectResult.textContent='Enter a code'; return; }
+      try{
+        const r = await fetch(WORKER_URL + '/info/' + encodeURIComponent(c));
+        if(r.status===404){ inspectResult.textContent='Not found'; return; }
+        const j = await r.json(); inspectResult.textContent = `Clicks: ${j.clicks || 0} • URL: ${j.url}`;
+      }catch(e){ inspectResult.textContent='Failed to fetch'; }
+    });
 
     // initial render
-    renderHistory(); renderMiniHistory();
-
-    // optional: update local clicks when user opens a short link in same browsing session
-    // (this won't necessarily reflect global clicks)
-    // we keep it simple: when user opens an item from history, they can manually refresh info via Info button.
-
+    renderHistory();
   </script>
 </body>
 </html>
