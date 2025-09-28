@@ -1,105 +1,498 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="bn">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ShimulModZ — Pro URL Shortener</title>
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg1: #f6f9ff; --card: #ffffff; --accent1: #5b6cff; --accent2: #7ce6b8; --muted:#6b7280;
+    :root {
+      --bg1: #f6f9ff; 
+      --card: #ffffff; 
+      --accent1: #5b6cff; 
+      --accent2: #7ce6b8; 
+      --muted: #6b7280;
+      --shadow: 0 4px 20px rgba(20, 20, 45, 0.08);
+      --radius: 16px;
     }
-    *{box-sizing:border-box}
-    body{font-family:Inter,system-ui,Arial;margin:0;background:linear-gradient(180deg,var(--bg1),#eef6f9);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-    .wrap{width:100%;max-width:920px}
-    .grid{display:grid;grid-template-columns:1fr 420px;gap:24px}
-    .card{background:var(--card);border-radius:14px;padding:20px;box-shadow:0 8px 30px rgba(20,20,45,0.06)}
-    h1{margin:0;font-size:20px}
-
-    /* Form */
-    .form .row{display:flex;gap:12px;margin-top:12px}
-    .form input[type=text], .form input[type=url], .form button{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(20,20,45,0.06);font-size:14px}
-    .form .small{font-size:12px;color:var(--muted);margin-top:8px}
-    .actions{display:flex;gap:10px;margin-top:12px}
-    .btn{background:linear-gradient(90deg,var(--accent1),#9b8bff);color:#fff;border:none;padding:10px 14px;border-radius:10px;cursor:pointer}
-    .btn.ghost{background:transparent;border:1px solid rgba(20,20,45,0.06);color:var(--muted)}
-
-    /* Result */
-    .result{margin-top:14px;padding:12px;border-radius:10px;background:#f8fafc;border:1px solid rgba(20,20,45,0.03)}
-    .short{font-weight:600;color:var(--accent1);word-break:break-all}
-    .mini{font-size:13px;color:var(--muted)}
-
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: Inter, system-ui, Arial;
+      background: linear-gradient(180deg, var(--bg1), #eef6f9);
+      min-height: 100vh;
+      color: #333;
+      line-height: 1.5;
+      padding: 0;
+      margin: 0;
+    }
+    
+    /* App Layout */
+    .app-container {
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    
+    .app-header {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    
+    .app-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      color: var(--accent1);
+    }
+    
+    .app-subtitle {
+      font-size: 14px;
+      color: var(--muted);
+    }
+    
+    /* Cards */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+    
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .card-title svg {
+      width: 20px;
+      height: 20px;
+    }
+    
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #444;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(20, 20, 45, 0.1);
+      font-size: 16px;
+      background: #fafafa;
+      transition: all 0.2s;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent1);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(91, 108, 255, 0.1);
+    }
+    
+    /* Buttons */
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    
+    .btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent1), #8b7dff);
+      color: white;
+      box-shadow: 0 4px 12px rgba(91, 108, 255, 0.3);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 6px rgba(91, 108, 255, 0.3);
+    }
+    
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid rgba(20, 20, 45, 0.1);
+      color: var(--muted);
+    }
+    
+    .btn-sm {
+      padding: 10px 14px;
+      font-size: 14px;
+    }
+    
+    /* Result Section */
+    .result-section {
+      display: none;
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid rgba(20, 20, 45, 0.05);
+    }
+    
+    .result-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .short-link {
+      font-weight: 700;
+      color: var(--accent1);
+      word-break: break-all;
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+    
+    .meta-info {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    
+    /* QR Code */
+    .qr-container {
+      text-align: center;
+      margin-top: 16px;
+      padding: 16px;
+      background: white;
+      border-radius: 12px;
+    }
+    
+    #qcanvas {
+      max-width: 100%;
+      height: auto;
+    }
+    
     /* History */
-    .history-list{display:flex;flex-direction:column;gap:8px}
-    .history-item{display:flex;justify-content:space-between;gap:8px;padding:10px;border-radius:10px;border:1px dashed rgba(20,20,45,0.03)}
-
-    /* QR canvas area */
-    #qcanvas{display:block;margin-top:10px}
-
-    /* Responsive */
-    @media (max-width:920px){.grid{grid-template-columns:1fr;}.card{margin-bottom:12px}}
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px dashed rgba(20, 20, 45, 0.08);
+    }
+    
+    .history-info {
+      flex: 1;
+    }
+    
+    .history-short {
+      font-weight: 600;
+      color: var(--accent1);
+      margin-bottom: 4px;
+    }
+    
+    .history-long {
+      font-size: 13px;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    .history-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      background: #f0f4f8;
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+    
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .tab.active {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Loading Animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 50px;
+      font-size: 14px;
+      z-index: 1000;
+      opacity: 0;
+      transition: all 0.3s;
+    }
+    
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    
+    /* Responsive Adjustments */
+    @media (min-width: 768px) {
+      .app-container {
+        max-width: 500px;
+        padding: 20px;
+      }
+    }
+    
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg1: #121826;
+        --card: #1e293b;
+        --muted: #94a3b8;
+      }
+      
+      body {
+        color: #e2e8f0;
+      }
+      
+      .form-input {
+        background: #2d3748;
+        border-color: #4a5568;
+        color: #e2e8f0;
+      }
+      
+      .form-input:focus {
+        background: #2d3748;
+      }
+      
+      .result-section, .history-item {
+        background: #2d3748;
+      }
+      
+      .tabs {
+        background: #2d3748;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="grid">
-      <div class="card form">
-        <h1>🔗 ShimulModZ — Pro URL Shortener</h1>
-        <p class="small">সরাসরি লিংক দাও, কাস্টম কোড দাও (ঐচ্ছিক), QR বানাও ও ডাউনলোড করো।</p>
-
-        <div class="row" style="margin-top:14px">
-          <input id="url" type="url" placeholder="Enter full URL (https://...)" />
-        </div>
-        <div class="row">
-          <input id="code" type="text" placeholder="Custom code (optional) - অক্ষর/সংখ্যা/ -_ allowed" />
-        </div>
-
-        <div class="actions">
-          <button class="btn" id="shortBtn">Shorten</button>
-          <button class="btn ghost" id="clearBtn">Clear</button>
-        </div>
-
-        <div id="feedback" class="result" style="display:none">
-          <div>Result: <span id="shortLink" class="short"></span></div>
-          <div class="mini" id="metaInfo"></div>
-          <div style="margin-top:8px">
-            <button class="btn ghost" id="copyBtn">Copy</button>
-            <button class="btn ghost" id="openBtn">Open</button>
-            <button class="btn ghost" id="downloadQrBtn">Download QR</button>
-          </div>
-          <canvas id="qcanvas"></canvas>
-        </div>
-
-      </div>
-
+  <div class="app-container">
+    <!-- App Header -->
+    <div class="app-header">
+      <h1 class="app-title">🔗 ShimulModZ</h1>
+      <p class="app-subtitle">প্রোফেশনাল URL শর্টেনার</p>
+    </div>
+    
+    <!-- Tabs Navigation -->
+    <div class="tabs">
+      <div class="tab active" data-tab="shorten">শর্টেন</div>
+      <div class="tab" data-tab="history">ইতিহাস</div>
+      <div class="tab" data-tab="tools">টুলস</div>
+    </div>
+    
+    <!-- Shorten Tab -->
+    <div class="tab-content active" id="shorten-tab">
       <div class="card">
-        <h2 style="margin:0;font-size:16px">History & Tools</h2>
-        <p class="small">এই ব্রাউজারে সর্বশেষ 10 টি লিংক সংরক্ষিত থাকবে।</p>
-
-        <div style="margin-top:10px">
-          <div style="display:flex;gap:8px;margin-bottom:8px">
-            <button class="btn ghost" id="showHistory">Show History</button>
-            <button class="btn ghost" id="clearHistory">Clear History</button>
-          </div>
-
-          <div id="history" class="history-list"></div>
+        <h2 class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M13.5 10.5L21 3M16 3h5v5M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/>
+          </svg>
+          লিংক শর্টেন করুন
+        </h2>
+        
+        <div class="form-group">
+          <label class="form-label" for="url">লিংক দিন</label>
+          <input id="url" type="url" class="form-input" placeholder="https://example.com" />
         </div>
-
-        <hr style="margin:12px 0">
-        <div>
-          <h3 style="margin:0;font-size:14px">Quick tools</h3>
-          <p class="mini">Enter a short code to see clicks (from KV) — যদি Worker এ info endpoint চলে।</p>
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <input id="inspectCode" type="text" placeholder="short code (e.g. ab12x)" />
-            <button class="btn ghost" id="inspectBtn">Inspect</button>
+        
+        <div class="form-group">
+          <label class="form-label" for="code">কাস্টম কোড (ঐচ্ছিক)</label>
+          <input id="code" type="text" class="form-input" placeholder="my-custom-code" />
+          <div style="font-size: 12px; color: var(--muted); margin-top: 6px;">
+            শুধুমাত্র অক্ষর, সংখ্যা, - এবং _ ব্যবহার করুন
           </div>
-          <div id="inspectResult" class="mini" style="margin-top:8px"></div>
+        </div>
+        
+        <div class="btn-group">
+          <button class="btn btn-primary" id="shortBtn">
+            <span id="btn-text">শর্টেন করুন</span>
+            <span id="btn-loading" class="loading" style="display: none;"></span>
+          </button>
+          <button class="btn btn-secondary" id="clearBtn">ক্লিয়ার</button>
+        </div>
+        
+        <!-- Result Section -->
+        <div id="feedback" class="result-section">
+          <div class="result-title">শর্ট লিংক তৈরি হয়েছে!</div>
+          <div id="shortLink" class="short-link"></div>
+          <div id="metaInfo" class="meta-info"></div>
+          
+          <div class="action-buttons">
+            <button class="btn btn-secondary btn-sm" id="copyBtn">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              কপি
+            </button>
+            <button class="btn btn-secondary btn-sm" id="openBtn">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+              ওপেন
+            </button>
+            <button class="btn btn-secondary btn-sm" id="downloadQrBtn">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              QR ডাউনলোড
+            </button>
+          </div>
+          
+          <div class="qr-container">
+            <canvas id="qcanvas"></canvas>
+          </div>
         </div>
       </div>
     </div>
+    
+    <!-- History Tab -->
+    <div class="tab-content" id="history-tab">
+      <div class="card">
+        <h2 class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          শর্টেন ইতিহাস
+        </h2>
+        
+        <div class="btn-group">
+          <button class="btn btn-secondary" id="showHistory">রিফ্রেশ</button>
+          <button class="btn btn-secondary" id="clearHistory">ইতিহাস ক্লিয়ার</button>
+        </div>
+        
+        <div id="history" class="history-list">
+          <!-- History items will be inserted here -->
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tools Tab -->
+    <div class="tab-content" id="tools-tab">
+      <div class="card">
+        <h2 class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+          </svg>
+          টুলস
+        </h2>
+        
+        <div class="form-group">
+          <label class="form-label" for="inspectCode">শর্ট কোড ইনস্পেক্ট করুন</label>
+          <input id="inspectCode" type="text" class="form-input" placeholder="ab12x" />
+          <div style="font-size: 12px; color: var(--muted); margin-top: 6px;">
+            লিংকের ক্লিক সংখ্যা দেখুন
+          </div>
+        </div>
+        
+        <button class="btn btn-primary" id="inspectBtn">ইনস্পেক্ট করুন</button>
+        
+        <div id="inspectResult" style="margin-top: 16px; padding: 12px; border-radius: 8px; background: #f0f4f8; font-size: 14px; display: none;"></div>
+      </div>
+    </div>
   </div>
-
+  
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+  
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script>
     // ====== CONFIG ======
@@ -109,6 +502,8 @@
     const urlInput = document.getElementById('url');
     const codeInput = document.getElementById('code');
     const shortBtn = document.getElementById('shortBtn');
+    const btnText = document.getElementById('btn-text');
+    const btnLoading = document.getElementById('btn-loading');
     const clearBtn = document.getElementById('clearBtn');
     const feedback = document.getElementById('feedback');
     const shortLinkEl = document.getElementById('shortLink');
@@ -125,92 +520,250 @@
     const inspectCode = document.getElementById('inspectCode');
     const inspectBtn = document.getElementById('inspectBtn');
     const inspectResult = document.getElementById('inspectResult');
+    
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const toastEl = document.getElementById('toast');
+
+    // ====== Tab Functionality ======
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabId = tab.getAttribute('data-tab');
+        
+        // Update active tab
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        // Show active tab content
+        tabContents.forEach(content => {
+          content.classList.remove('active');
+          if (content.id === `${tabId}-tab`) {
+            content.classList.add('active');
+          }
+        });
+        
+        // Refresh history when history tab is opened
+        if (tabId === 'history') {
+          renderHistory();
+        }
+      });
+    });
+
+    // ====== Toast Function ======
+    function toast(message, duration = 3000) {
+      toastEl.textContent = message;
+      toastEl.classList.add('show');
+      
+      setTimeout(() => {
+        toastEl.classList.remove('show');
+      }, duration);
+    }
 
     // ====== Helpers ======
-    function toast(txt){alert(txt)}
-
-    function saveHistory(item){
-      try{
-        const arr = JSON.parse(localStorage.getItem('shimul_history')||'[]');
+    function saveHistory(item) {
+      try {
+        const arr = JSON.parse(localStorage.getItem('shimul_history') || '[]');
         arr.unshift(item);
         const uniq = [];
         const out = [];
-        for(const it of arr){ if(uniq.indexOf(it.code)===-1){ uniq.push(it.code); out.push(it); } }
-        while(out.length>10) out.pop();
+        for (const it of arr) { 
+          if (uniq.indexOf(it.code) === -1) { 
+            uniq.push(it.code); 
+            out.push(it); 
+          } 
+        }
+        while (out.length > 10) out.pop();
         localStorage.setItem('shimul_history', JSON.stringify(out));
-      }catch(e){console.warn(e)}
+      } catch (e) { console.warn(e) }
     }
 
-    function renderHistory(){
-      const arr = JSON.parse(localStorage.getItem('shimul_history')||'[]');
-      historyEl.innerHTML='';
-      if(!arr.length){ historyEl.innerHTML='<div class="mini">No history yet</div>'; return; }
-      arr.forEach(item=>{
-        const el = document.createElement('div'); el.className='history-item';
-        el.innerHTML = `<div style="flex:1"><div style="font-weight:600">${item.short}</div><div class="mini">${item.long}</div></div>
-                        <div style="display:flex;flex-direction:column;gap:6px">
-                          <button class="btn ghost" data-copy="${item.short}">Copy</button>
-                          <button class="btn ghost" data-open="${item.short}">Open</button>
-                        </div>`;
+    function renderHistory() {
+      const arr = JSON.parse(localStorage.getItem('shimul_history') || '[]');
+      historyEl.innerHTML = '';
+      
+      if (!arr.length) { 
+        historyEl.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--muted);">কোনো ইতিহাস নেই</div>'; 
+        return; 
+      }
+      
+      arr.forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'history-item';
+        el.innerHTML = `
+          <div class="history-info">
+            <div class="history-short">${item.short}</div>
+            <div class="history-long">${item.long}</div>
+          </div>
+          <div class="history-actions">
+            <button class="btn btn-secondary btn-sm" data-copy="${item.short}">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+            <button class="btn btn-secondary btn-sm" data-open="${item.short}">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </button>
+          </div>
+        `;
         historyEl.appendChild(el);
       });
     }
 
-    document.addEventListener('click', (e)=>{
-      if(e.target && e.target.dataset && e.target.dataset.copy){ navigator.clipboard.writeText(e.target.dataset.copy).then(()=>toast('Copied')) }
-      if(e.target && e.target.dataset && e.target.dataset.open){ window.open(e.target.dataset.open, '_blank') }
+    // Event delegation for history actions
+    document.addEventListener('click', (e) => {
+      if (e.target && e.target.closest('[data-copy]')) {
+        const copyText = e.target.closest('[data-copy]').getAttribute('data-copy');
+        navigator.clipboard.writeText(copyText).then(() => toast('কপি করা হয়েছে!'));
+      }
+      
+      if (e.target && e.target.closest('[data-open]')) {
+        const openUrl = e.target.closest('[data-open]').getAttribute('data-open');
+        window.open(openUrl, '_blank');
+      }
     });
 
     // ====== Shorten flow ======
-    shortBtn.addEventListener('click', async ()=>{
+    shortBtn.addEventListener('click', async () => {
       const longUrl = urlInput.value.trim();
       let code = codeInput.value.trim();
-      if(!longUrl || !/^https?:\/\//i.test(longUrl)){ toast('Please enter a valid URL (start with http/https)'); return; }
+      
+      if (!longUrl || !/^https?:\/\//i.test(longUrl)) { 
+        toast('দয়া করে একটি বৈধ URL দিন (http/https দিয়ে শুরু হতে হবে)'); 
+        return; 
+      }
 
-      shortBtn.disabled = true; shortBtn.textContent='Working...';
-      try{
-        const resp = await fetch(WORKER_URL + '/shorten', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ url: longUrl, code }) });
+      // Show loading state
+      shortBtn.disabled = true;
+      btnText.textContent = 'কাজ চলছে...';
+      btnLoading.style.display = 'inline-block';
+
+      try {
+        const resp = await fetch(WORKER_URL + '/shorten', { 
+          method: 'POST', 
+          headers: { 'Content-Type': 'application/json' }, 
+          body: JSON.stringify({ url: longUrl, code }) 
+        });
+        
         const data = await resp.json();
-        if(data.error){ toast(data.error); return; }
+        
+        if (data.error) { 
+          toast(data.error); 
+          return; 
+        }
 
-        const item = { short: data.short, long: longUrl, code: data.code, created: Date.now() };
-        saveHistory(item); renderHistory();
+        const item = { 
+          short: data.short, 
+          long: longUrl, 
+          code: data.code, 
+          created: Date.now() 
+        };
+        
+        saveHistory(item);
 
+        // Show result
         feedback.style.display = 'block';
-        shortLinkEl.textContent = data.short; metaInfo.textContent = `Code: ${data.code} • Created: ${new Date().toLocaleString()}`;
+        shortLinkEl.textContent = data.short; 
+        metaInfo.textContent = `কোড: ${data.code} • তৈরি হয়েছে: ${new Date().toLocaleString('bn-BD')}`;
 
-        // generate qr to canvas
-        qcanvas.width = 240; qcanvas.height = 240;
-        QRCode.toCanvas(qcanvas, data.short, { width: 240 }, function (err) { if(err) console.error(err); });
+        // Generate QR code
+        qcanvas.width = 240;
+        qcanvas.height = 240;
+        QRCode.toCanvas(qcanvas, data.short, { width: 240, margin: 1 }, function (err) { 
+          if (err) console.error(err); 
+        });
 
-      }catch(err){ console.error(err); toast('Failed to connect to server.'); }
-      finally{ shortBtn.disabled=false; shortBtn.textContent='Shorten' }
+        toast('লিংক সফলভাবে শর্টেন হয়েছে!');
+
+      } catch (err) { 
+        console.error(err); 
+        toast('সার্ভারের সাথে সংযোগ করতে ব্যর্থ হয়েছে।'); 
+      } finally { 
+        // Reset button state
+        shortBtn.disabled = false;
+        btnText.textContent = 'শর্টেন করুন';
+        btnLoading.style.display = 'none';
+      }
     });
 
-    clearBtn.addEventListener('click', ()=>{ urlInput.value=''; codeInput.value=''; feedback.style.display='none' });
+    clearBtn.addEventListener('click', () => { 
+      urlInput.value = ''; 
+      codeInput.value = ''; 
+      feedback.style.display = 'none';
+      toast('ফর্ম ক্লিয়ার করা হয়েছে');
+    });
 
-    copyBtn.addEventListener('click', ()=>{ const txt = shortLinkEl.textContent; if(txt){ navigator.clipboard.writeText(txt); toast('Short link copied') } });
-    openBtn.addEventListener('click', ()=>{ const txt = shortLinkEl.textContent; if(txt) window.open(txt, '_blank') });
+    copyBtn.addEventListener('click', () => { 
+      const txt = shortLinkEl.textContent; 
+      if (txt) { 
+        navigator.clipboard.writeText(txt); 
+        toast('শর্ট লিংক কপি করা হয়েছে!');
+      } 
+    });
+    
+    openBtn.addEventListener('click', () => { 
+      const txt = shortLinkEl.textContent; 
+      if (txt) window.open(txt, '_blank'); 
+    });
 
-    downloadQrBtn.addEventListener('click', ()=>{
-      if(!qcanvas) return; const url = qcanvas.toDataURL('image/png'); const a = document.createElement('a'); a.href = url; a.download = 'shortlink-qr.png'; a.click();
+    downloadQrBtn.addEventListener('click', () => {
+      if (!qcanvas) return;
+      const url = qcanvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'shortlink-qr.png';
+      a.click();
+      toast('QR কোড ডাউনলোড করা হয়েছে!');
     });
 
     // ====== History UI ======
-    showHistoryBtn.addEventListener('click', ()=>{ renderHistory() });
-    clearHistoryBtn.addEventListener('click', ()=>{ localStorage.removeItem('shimul_history'); renderHistory(); toast('History cleared') });
-
-    // ====== Inspect code ======
-    inspectBtn.addEventListener('click', async ()=>{
-      const c = inspectCode.value.trim(); if(!c){ inspectResult.textContent='Enter a code'; return; }
-      try{
-        const r = await fetch(WORKER_URL + '/info/' + encodeURIComponent(c));
-        if(r.status===404){ inspectResult.textContent='Not found'; return; }
-        const j = await r.json(); inspectResult.textContent = `Clicks: ${j.clicks || 0} • URL: ${j.url}`;
-      }catch(e){ inspectResult.textContent='Failed to fetch'; }
+    showHistoryBtn.addEventListener('click', () => { 
+      renderHistory(); 
+      toast('ইতিহাস রিফ্রেশ করা হয়েছে');
+    });
+    
+    clearHistoryBtn.addEventListener('click', () => { 
+      localStorage.removeItem('shimul_history'); 
+      renderHistory(); 
+      toast('ইতিহাস ক্লিয়ার করা হয়েছে');
     });
 
-    // initial render
+    // ====== Inspect code ======
+    inspectBtn.addEventListener('click', async () => {
+      const c = inspectCode.value.trim(); 
+      if (!c) { 
+        inspectResult.textContent = 'দয়া করে একটি কোড দিন'; 
+        inspectResult.style.display = 'block';
+        return; 
+      }
+      
+      try {
+        const r = await fetch(WORKER_URL + '/info/' + encodeURIComponent(c));
+        
+        if (r.status === 404) { 
+          inspectResult.textContent = 'কোডটি পাওয়া যায়নি'; 
+          inspectResult.style.display = 'block';
+          return; 
+        }
+        
+        const j = await r.json(); 
+        inspectResult.innerHTML = `
+          <strong>ক্লিক সংখ্যা:</strong> ${j.clicks || 0}<br>
+          <strong>লিংক:</strong> ${j.url}
+        `;
+        inspectResult.style.display = 'block';
+        
+      } catch (e) { 
+        inspectResult.textContent = 'তথ্য পাওয়া যায়নি'; 
+        inspectResult.style.display = 'block';
+      }
+    });
+
+    // Initial render
     renderHistory();
   </script>
 </body>
