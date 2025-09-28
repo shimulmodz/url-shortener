@@ -5,59 +5,73 @@
   <title>ShimulModZ URL Shortener</title>
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif; background:#f4f6f9; text-align: center; margin: 50px; 
-      
+      margin: 0; padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f0f4ff, #d9e6ff);
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh;
     }
-   .container-bg{
-      padding: 10px 5px;
-      margin: 4px;
-      border: 2px solid black;
-      overflow: hidden;
-      display: gird;
-      justify-content: center;
-      align-items: center;
+    .card {
+      background: #fff; padding: 30px;
+      border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      max-width: 400px; width: 100%; text-align: center;
     }
-   .input-box input{
-     width: 200px;
-     padding: 15px 20px;
-     margin: 10px;
-     background: #CEEAFF;
-     border-radius: 50px;
-     border: 2px dashed #3489EB;
-   }
-  .input-box button{
-    color: #000000;
-    background: linear-gradient(180deg, #FBA500, #FB00AE);
-    border-radius: 8px;
-     padding: 10px 40px;
-     cursor:pointer;
-     border: 3px solid #3E1CF6;
-   }
-    h1 { color: #333; }
-    .result { margin-top: 20px; font-weight: bold; font-size: 18px; }
-    .copy-btn { background: #28a745; margin-left: 10px; }
+    h1 { margin-bottom: 20px; color: #222; }
+    input, select {
+      width: 90%; padding: 12px; margin: 8px 0;
+      border-radius: 10px; border: 2px solid #3489EB;
+      outline: none;
+    }
+    button {
+      width: 95%; padding: 12px;
+      margin-top: 10px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      color: #fff; border: none; border-radius: 12px;
+      font-size: 16px; cursor: pointer; transition: 0.3s;
+    }
+    button:hover { opacity: 0.9; }
+    .result {
+      margin-top: 20px; font-size: 16px;
+      padding: 12px; background: #f1f3ff;
+      border-radius: 12px;
+    }
+    .short-link { font-weight: bold; color: #007bff; word-break: break-all; }
+    .copy-btn, .qr-btn {
+      padding: 6px 15px; margin: 5px;
+      border: none; border-radius: 8px; cursor: pointer;
+    }
+    .copy-btn { background: #28a745; color: #fff; }
+    .qr-btn { background: #ff5722; color: #fff; }
+    canvas { margin-top: 10px; }
+    @media (max-width: 500px) {
+      .card { padding: 20px; }
+      input, button { font-size: 14px; }
+    }
   </style>
 </head>
 <body>
-  <div class="container-bg">
-  <h1>🔗 ShimulModZ URL Shortener</h1>
-  <div class="input-box">
-  <input type="text" id="longUrl" placeholder="Enter long URL"><br>
-  <input type="text" id="customCode" placeholder="Custom code (optional)"><br>
-  <button onclick="shorten()">Shorten</button>
-  <div class="result" id="result"></div>
+  <div class="card">
+    <h1>🔗 ShimulModZ Shortener</h1>
+    <input type="text" id="longUrl" placeholder="Enter long URL (http/https)">
+    <input type="text" id="customCode" placeholder="Custom code (optional)">
+    <select id="expire">
+      <option value="">No Expiry</option>
+      <option value="1">Expire in 1 day</option>
+      <option value="7">Expire in 7 days</option>
+      <option value="30">Expire in 30 days</option>
+    </select>
+    <button onclick="shorten()">Shorten Link</button>
+    <div class="result" id="result"></div>
   </div>
-  </div>
-  
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script>
-    // তোমার Cloudflare Worker URL বসাও এখানে 👇
     const WORKER_URL = "https://url-short-demo.shimul-modz.workers.dev";
 
     async function shorten() {
       const longUrl = document.getElementById("longUrl").value.trim();
       const customCode = document.getElementById("customCode").value.trim();
+      const expire = document.getElementById("expire").value;
 
       if (!longUrl) {
         alert("❌ Please enter a valid URL");
@@ -68,16 +82,23 @@
         const res = await fetch(WORKER_URL + "/shorten", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: longUrl, code: customCode })
+          body: JSON.stringify({ url: longUrl, code: customCode, expire })
         });
 
         const data = await res.json();
         if (data.error) {
           document.getElementById("result").innerText = data.error;
         } else {
-          document.getElementById("result").innerHTML =
-            `✅ Short URL: <a href="${data.short}" target="_blank">${data.short}</a>
-             <button class="copy-btn" onclick="copyLink('${data.short}')">📋 Copy</button>`;
+          // Save to history
+          saveHistory(data);
+
+          document.getElementById("result").innerHTML = `
+            ✅ Short URL: <a href="${data.short}" target="_blank" class="short-link">${data.short}</a><br>
+            <button class="copy-btn" onclick="copyLink('${data.short}')">📋 Copy</button>
+            <button class="qr-btn" onclick="generateQR('${data.short}')">📱 QR</button>
+            ${data.expire ? `<br>⏳ Expire: ${new Date(data.expire).toLocaleString()}` : ""}
+            <div id="qrcode"></div>
+          `;
         }
       } catch (err) {
         document.getElementById("result").innerText = "❌ Failed to connect to server.";
@@ -87,6 +108,21 @@
     function copyLink(link) {
       navigator.clipboard.writeText(link);
       alert("✅ Short link copied!");
+    }
+
+    function generateQR(link) {
+      const qrDiv = document.getElementById("qrcode");
+      qrDiv.innerHTML = "";
+      QRCode.toCanvas(link, { width: 200 }, (err, canvas) => {
+        if (!err) qrDiv.appendChild(canvas);
+      });
+    }
+
+    function saveHistory(data) {
+      let history = JSON.parse(localStorage.getItem("shortHistory") || "[]");
+      history.unshift(data);
+      if (history.length > 5) history.pop();
+      localStorage.setItem("shortHistory", JSON.stringify(history));
     }
   </script>
 </body>
